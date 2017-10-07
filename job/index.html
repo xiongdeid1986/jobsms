@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>扫聘临时短信系统</title>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js" type="text/javascript"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="page-header">
+    <h1>人事短信批量发送系统 <small>内部版本</small></h1>
+</div>
+<div class="input-group">
+    <span class="input-group-addon" >输入管理密码</span>
+    <input type="text" class="form-control" placeholder="输入管理密码" id="password_val" aria-describedby="basic-addon1">
+</div>
+
+<h3> <span class="label label-default">选择需要发送的内容</span></h3>
+<div class="input-group">
+    <span class="input-group-addon" >$time(变量)</span>
+    <input type="text" class="form-control" placeholder="$time" id="var_time" aria-describedby="basic-addon1">
+</div>
+<div class="input-group">
+    <span class="input-group-addon" >$job(变量)</span>
+    <input type="text" class="form-control" placeholder="$job" id="var_job" aria-describedby="basic-addon1">
+</div>
+<div class="list-group list-group-id">
+    <a href="#" class="list-group-item active" data-template='47145' data-job="汽车改装">
+        你好, 你应聘的（汽车改装）请联系我们负责人 13608556800(曾总). 白天任何时间可打. 工作地址 :花溪孟关汽车城 (公交路线请自行查询)
+    </a>
+    <a href="#" class="list-group-item" data-template='47146'  data-job="网站客服">你好,你应聘的职位 (网站客服), 请在{$time}准时到公司面试,(其他时间不接待).地址:花果园M1栋(国际商务港)2108-2109(双子塔对面). (公交路线请自行查询 *^__^*)
+    </a>
+    <a href="#" class="list-group-item" data-template='47146' data-job="">你好,你应聘的职位 ({$job}), 请在{$time}准时到公司面试,(其他时间不接待).地址:花果园M1栋(国际商务港)2108-2109(双子塔对面). (公交路线请自行查询 *^__^*)</a>
+</div>
+<div class="btn-group btn-group-justified" role="group" aria-label="...">
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-success" onclick="send();">发送</button>
+    </div>
+</div>
+<div class="input-group">
+    <span class="input-group-addon" id="basic-addon1">P</span>
+    <textarea type="text" class="form-control" placeholder="输入手机号码，一行一个。" rows="30" aria-describedby="basic-addon1"></textarea>
+</div>
+<script type="text/javascript">
+    $(".list-group-id a").click(function(){
+        $(".list-group-id a").removeClass('active');
+        $(this).addClass('active');
+    });
+    function send(){
+        var sms = {};
+        var c = $(".list-group-item.active").html();
+        var p = $("#password_val").val();
+        if(!p){
+            alert('输入管理员密码');
+            return;
+        }
+        var obj = {
+            'p':p
+        }
+        $.get("./job.php",obj,function(d){
+            console.log(d);
+            var j = JSON.parse(d);
+            console.log(j);
+            var status = parseInt(j.status);
+            if(status == 0){
+                /*成功*/
+                console.log('success');
+            }else{
+                /*失败*/
+                console.log('fail');
+            }
+        });
+        var is_t = c.match(/\$time/);
+        if(is_t){
+            var $time = $('#var_time').val();
+            if(!$time){
+                alert('需要时间变量');
+                return;
+            }
+            sms['time'] = $time;
+            c = c.replace(/\{\$time\}/,$time);
+        }
+        var is_job = c.match(/\$job/);
+        if(is_job){
+            var $job = $('#var_job').val();
+            if(!$job){
+                alert('需要职位变量');
+                return;
+            }
+            sms['job'] = $job;
+            c = c.replace(/\{\$job\}/,$job);
+        }
+        console.log(sms);
+    }
+</script>
+</body>
+</html>
