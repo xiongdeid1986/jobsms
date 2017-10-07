@@ -14,8 +14,8 @@
     <h1>人事短信批量发送系统 <small>内部版本</small></h1>
 </div>
 <div class="input-group">
-    <span class="input-group-addon" >输入管理密码</span>
-    <input type="text" class="form-control" placeholder="输入管理密码" id="password_val" aria-describedby="basic-addon1">
+    <span class="input-group-addon" >输入短信KEY</span>
+    <input type="text" class="form-control" placeholder="输入短信KEY" id="sms_key" aria-describedby="basic-addon1">
 </div>
 
 <h3> <span class="label label-default">选择需要发送的内容</span></h3>
@@ -52,18 +52,20 @@
     function send(){
         var sms = {};
         var c = $(".list-group-item.active").html();
-        var p = $("#password_val").val();
-        if(!p){
-            alert('输入管理员密码');
+        var k = $("#sms_key").val();
+        if(!k){
+            alert('输入短信KEY');
+            return;
+        }
+        if(k.length < 32){
+            alert('短信KEY长度不足');
             return;
         }
         var obj = {
-            'p':p
+            'k':k
         }
         $.get("./job.php",obj,function(d){
-            console.log(d);
             var j = JSON.parse(d);
-            console.log(j);
             var status = parseInt(j.status);
             if(status == 0){
                 /*成功*/

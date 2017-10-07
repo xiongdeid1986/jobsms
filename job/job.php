@@ -1,19 +1,15 @@
 <?php
-/*
- *
- * NND
- * */
-/*222*/
-
 session_start();
 
-$login = @$_SESSION["login"];
-if(empty($login)){ 
-    $pwd = @$_GET["p"];
-    if(empty($pwd) || @$pwd != PASS){
-        ReturnAjax("fail","没有密码或密码错误","NoPasswordOrPasswordError");
+$login = @$_SESSION["login"];//是否登陆
+$sms_key = @$_SESSION["sms_key"];//取得短信KEY
+if(empty($login) || empty($sms_key)){
+    $k = @$_GET["k"];//短信KEY GET值
+    if(empty($k)){
+        ReturnAjax("fail","没有短信KEY","no key");
     }else{
         $_SESSION["login"] = 1;
+        $_SESSION["sms_key"] = $k;
     }
 }
 
